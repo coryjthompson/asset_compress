@@ -67,7 +67,7 @@ class AssetCompressHelperPluginIniTest extends CakeTestCase {
 
 	public function testUrlGenerationProductionModePluginIni() {
 		Configure::write('debug', 0);
-		$this->Helper->config()->set('js.timestamp', false);
+		$this->Helper->config()->set('js.fileHash', false);
 
 		$result = $this->Helper->script('TestAssetIni.libs.js');
 		$expected = array(

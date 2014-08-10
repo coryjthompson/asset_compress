@@ -257,19 +257,18 @@ class AssetBuildTask extends AppShell {
  * @return void
  */
 	protected function _generateFile($build) {
-		$name = $this->Cacher->buildFileName($build);
-		if ($this->Cacher->isFresh($build) && empty($this->params['force'])) {
+        $contents = $this->Compiler->generate($build);
+
+        $name = $this->Cacher->buildFileName($build, $contents);
+		if ($this->Cacher->isFresh($build, $contents) && empty($this->params['force'])) {
 			$this->out('<info>Skip building</info> ' . $name . ' existing file is still fresh.');
 			return;
 		}
 		// Clear the timestamp so it can be regenerated.
 		$this->Cacher->setTimestamp($build, 0);
-
-		$name = $this->Cacher->buildFileName($build);
 		try {
 			$this->out('<success>Saving file</success> for ' . $name);
-			$contents = $this->Compiler->generate($build);
-			$this->Cacher->write($build, $contents);
+            $this->Cacher->write($build, $contents);
 		} catch (Exception $e) {
 			$this->err('Error: ' . $e->getMessage());
 		}

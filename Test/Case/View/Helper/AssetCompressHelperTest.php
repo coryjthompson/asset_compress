@@ -347,7 +347,7 @@ class AssetCompressHelperTest extends CakeTestCase {
 		Configure::write('debug', 0);
 		$config = $this->Helper->config();
 		$config->set('js.baseUrl', 'http://cdn.example.com/js/');
-		$config->set('js.timestamp', false);
+		$config->set('js.fileHash', false);
 
 		$result = $this->Helper->script('libs.js');
 		$expected = array(
@@ -471,7 +471,7 @@ class AssetCompressHelperTest extends CakeTestCase {
 		Configure::write('debug', 0);
 		$config = $this->Helper->config();
 		$config->general('writeCache', true);
-		$config->set('js.timestamp', false);
+		$config->set('js.fileHash', false);
 		$config->cachePath('js', TMP);
 		$config->addTarget('asset_test.js', array(
 			'files' => array('one.js'),
@@ -494,7 +494,7 @@ class AssetCompressHelperTest extends CakeTestCase {
 
 	public function testUrlProductionMode() {
 		Configure::write('debug', 0);
-		$this->Helper->config()->set('js.timestamp', false);
+		$this->Helper->config()->set('js.fileHash', false);
 
 		$result = $this->Helper->url('libs.js');
 		$this->assertEquals('/cache_js/libs.js', $result);
@@ -518,22 +518,22 @@ class AssetCompressHelperTest extends CakeTestCase {
 	}
 
 /**
- * test that baseurl and timestamps play nice.
+ * test that baseurl and hash play nice.
  *
  * @return void
  */
-	public function testUrlWithBaseUrlAndTimestamp() {
+	public function testUrlWithBaseUrlAndHash() {
 		Configure::write('debug', 0);
 		$config = $this->Helper->config();
 		$config->set('js.baseUrl', 'http://cdn.example.com/js/');
-		$config->set('js.timestamp', true);
+		$config->set('js.fileHash', true);
 		$config->general('cacheConfig', true);
 
 		// populate the cache.
-		Cache::write(AssetConfig::CACHE_BUILD_TIME_KEY, array('libs.js' => 1234), AssetConfig::CACHE_CONFIG);
+		Cache::write(AssetConfig::CACHE_BUILD_TIME_KEY, array('libs.js' => '123'), AssetConfig::CACHE_CONFIG);
 
 		$result = $this->Helper->url('libs.js');
-		$expected = 'http://cdn.example.com/js/libs.v1234.js';
+		$expected = 'http://cdn.example.com/js/libs.v123.js';
 		$this->assertEquals($expected, $result);
 	}
 

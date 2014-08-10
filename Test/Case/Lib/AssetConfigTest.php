@@ -62,7 +62,7 @@ class AssetConfigTest extends CakeTestCase {
 
 	public function testBuildFromIniFile() {
 		$config = AssetConfig::buildFromIniFile($this->testConfig);
-		$this->assertEquals(1, $config->get('js.timestamp'));
+		$this->assertEquals(1, $config->get('js.fileHash'));
 		$this->assertEquals(1, $config->general('writeCache'));
 	}
 
