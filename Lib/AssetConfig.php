@@ -477,6 +477,24 @@ class AssetConfig {
 	}
 
 /**
+ * Access for getting and setting the gzip boolean
+ *
+ * @param string $ext Extension to get gzip bool for.
+ * @param bool $gzip sets the gzip param
+ *
+ * @return bool
+ */
+	public function gzip($ext, $gzip = null) {
+		if ($gzip == null) {
+			if (isset($this->_data[$ext]['gzip'])) {
+				return $this->_data[$ext]['gzip'];
+			}
+			return false; //disabled by default
+		}
+
+		return $this->_data[$ext]['gzip'] = $gzip;
+	}
+/**
  * Get / set values from the General section. This is preferred
  * to using get()/set() as you don't run the risk of making a
  * mistake in General's casing.

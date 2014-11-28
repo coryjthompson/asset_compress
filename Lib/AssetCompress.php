@@ -1,13 +1,11 @@
 <?php
-App::uses('AssetFilter', 'AssetCompress.Lib');
-
 /**
- * Class Gzip
+ * Class AssetCompress
  *
  * Manually compress assets using gzip.
  * Especially useful for CDNs which do not support automatic gzip (such as s3)
  */
-class Gzip extends AssetFilter {
+class AssetCompress {
 
 	/**
 	 * compression_level
@@ -18,7 +16,7 @@ class Gzip extends AssetFilter {
 		'compression_level' => 9
 	);
 
-	public function output($file, $contents) {
+	public function output($contents) {
 		return gzcompress($contents, $this->_settings['compression_level']);
 	}
 }

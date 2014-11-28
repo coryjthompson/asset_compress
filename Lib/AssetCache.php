@@ -1,4 +1,5 @@
 <?php
+App::uses('AssetCompress', 'AssetCompress.Lib');
 App::uses('AssetScanner', 'AssetCompress.Lib');
 
 /**
@@ -30,9 +31,13 @@ class AssetCache {
 			throw new RuntimeException('Cannot write cache file. Unable to write to ' . $path);
 		}
 		$filename = $this->buildFileName($build);
-		$success = file_put_contents($path . $filename, $content) !== false;
+		$isSuccess = file_put_contents($path . $filename, $content) !== false;
+		if($this->_Config->gzip($ext)) {
+			$assetCompress = new AssetCompress();
+			file_put_contents($path . $filename . '.gzip', $assetCompress->output($content));
+		}
 		$this->finalize($build);
-		return $success;
+		return $isSuccess;
 	}
 
 /**
