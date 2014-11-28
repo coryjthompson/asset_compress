@@ -270,6 +270,14 @@ class AssetBuildTask extends AppShell {
 			$this->out('<success>Saving file</success> for ' . $name);
 			$contents = $this->Compiler->generate($build);
 			$this->Cacher->write($build, $contents);
+
+			// optionally build gzip version
+			$ext = $this->_Config->getExt($build);
+			if($this->_Config->gzip($ext)) {
+				$compressedContents = AssetCompress::build($contents);
+				$this->Cacher->write($build, $compressedContents, 'gz');
+			}
+
 		} catch (Exception $e) {
 			$this->err('Error: ' . $e->getMessage());
 		}

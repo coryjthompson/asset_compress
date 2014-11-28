@@ -21,21 +21,21 @@ class AssetCache {
  *
  * @param string $build The filename to write.
  * @param string $content The contents to write.
+ * @param string|bool $appendExtension the extension to
+ * @return bool the results
  * @throws RuntimeException
  */
-	public function write($build, $content) {
+	public function write($build, $content, $appendExtension=false) {
 		$ext = $this->_Config->getExt($build);
 		$path = $this->_Config->cachePath($ext);
-
 		if (!is_writable($path)) {
 			throw new RuntimeException('Cannot write cache file. Unable to write to ' . $path);
 		}
 		$filename = $this->buildFileName($build);
-		$isSuccess = file_put_contents($path . $filename, $content) !== false;
-		if($this->_Config->gzip($ext)) {
-			$assetCompress = new AssetCompress();
-			file_put_contents($path . $filename . '.gzip', $assetCompress->output($content));
+		if($appendExtension) {
+			$filename .= '.' . $appendExtension;
 		}
+		$isSuccess = file_put_contents($path . $filename, $content) !== false;
 		$this->finalize($build);
 		return $isSuccess;
 	}
