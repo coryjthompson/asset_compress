@@ -302,7 +302,7 @@ class AssetCompressHelper extends AppHelper {
 			return $output;
 		}
 
-		$url = $this->url($file, $options);
+		$url = $this->_url($file, $options);
 		unset($options['full']);
 		return $this->Html->css($url, null, $options);
 	}
@@ -342,9 +342,8 @@ class AssetCompressHelper extends AppHelper {
 			return $output;
 		}
 
-		$url = $this->url($file, $options);
+		$url = $this->_url($file, $options);
 		unset($options['full']);
-
 		return $this->Html->script($url, $options);
 	}
 
@@ -355,21 +354,40 @@ class AssetCompressHelper extends AppHelper {
  * to that build file.
  *
  * @param string $file The build file that you want a URL for.
- * @param array $options Options for URL generation.
+ * @param bool $full does contain full url
  * @return string The generated URL.
  * @throws Exception when the build file does not exist.
  */
 	public function url($file = null, $full = false) {
+		$options = $full;
+		if (!is_array($full)) {
+			$options = array('full' => $full);
+		}
+
+		return $this->_url($file, $options);
+	}
+
+/**
+ * Get the URL for a given asset name.
+ *
+ * Takes an build filename, and returns the URL
+ * to that build file.
+ *
+ * @param string $file The build file that you want a URL for.
+ * @param array $options
+ * @return string The generated URL.
+ * @throws Exception when the build file does not exist.
+ */
+	protected function _url($file = null, $options = array()) {
 		$config = $this->config();
 		if (!$config->exists($file)) {
 			throw new Exception('Cannot get URL for build file that does not exist.');
 		}
 
-		$options = $full;
-		if (!is_array($full)) {
-			$options = array('full' => $full);
+		if(!isset($options['full'])) {
+			$options['full'] = false;
 		}
-		$options += array('full' => false);
+
 		$type = $config->getExt($file);
 
 		$baseUrl = $config->get($type . '.baseUrl');
@@ -401,6 +419,7 @@ class AssetCompressHelper extends AppHelper {
 		}
 
 		return $route;
+
 	}
 
 /**
