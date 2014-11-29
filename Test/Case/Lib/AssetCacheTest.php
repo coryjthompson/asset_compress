@@ -40,6 +40,15 @@ class AssetCacheTest extends CakeTestCase {
 		unlink(TMP . 'test.v' . $now . '.js');
 	}
 
+	public function testWriteExtension() {
+		$this->config->set('js.timestamp', false);
+		$this->cache->write('test.js', 'Some content', 'gz');
+
+		$contents = file_get_contents(TMP . 'test.js.gz');
+		$this->assertEquals('Some content', $contents);
+		unlink(TMP. 'test.js.gz');
+	}
+
 	public function testIsFreshNoBuild() {
 		$this->assertFalse($this->cache->isFresh('libs.js'));
 	}
