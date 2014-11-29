@@ -281,7 +281,7 @@ class AssetCompressHelper extends AppHelper {
  * @param string $file A build target to include.
  * @param array $options An array of options for the stylesheet tag.
  * @throws RuntimeException
- * @return A stylesheet tag
+ * @return string a stylesheet tag
  */
 	public function css($file, $options = array()) {
 		$file = $this->_addExt($file, '.css');
@@ -321,7 +321,7 @@ class AssetCompressHelper extends AppHelper {
  * @param string $file A build target to include.
  * @param array $options An array of options for the script tag.
  * @throws RuntimeException
- * @return A script tag
+ * @return string a script tag
  */
 	public function script($file, $options = array()) {
 		$file = $this->_addExt($file, '.js');
@@ -384,6 +384,10 @@ class AssetCompressHelper extends AppHelper {
 			throw new Exception('Cannot get URL for build file that does not exist.');
 		}
 
+		if(!isset($options['gzip'])) {
+			$options['gzip'] = false;
+		}
+
 		if(!isset($options['full'])) {
 			$options['full'] = false;
 		}
@@ -394,15 +398,19 @@ class AssetCompressHelper extends AppHelper {
 		$path = $config->get($type . '.cachePath');
 		$devMode = Configure::read('debug') > 0;
 
+		$appendExtension = ($config->gzip($type) && $options['gzip'] === true)
+			? 'gz'
+			: false;
+
 		// CDN routes.
 		if ($baseUrl && !$devMode) {
-			return $baseUrl . $this->_getBuildName($file);
+			return $baseUrl . $this->_getBuildName($file, $appendExtension);
 		}
 
 		if (!$devMode) {
 			$path = str_replace(WWW_ROOT, '/', $path);
 			$path = rtrim($path, '/') . '/';
-			$route = $path . $this->_getBuildName($file);
+			$route = $path . $this->_getBuildName($file, $appendExtension);
 		}
 		if ($devMode || $config->general('alwaysEnableController')) {
 			$baseUrl = str_replace(WWW_ROOT, '/', $path);
@@ -429,9 +437,10 @@ class AssetCompressHelper extends AppHelper {
  * with statically generated files.
  *
  * @param string $build The build being resolved.
+ * @param string|bool $appendExtension
  * @return string The resolved build name.
  */
-	protected function _getBuildName($build) {
+	protected function _getBuildName($build, $appendExtension = false) {
 		$config = $this->config();
 		$ext = $config->getExt($build);
 		$hash = $this->_getHashName($build, $ext);
@@ -439,7 +448,7 @@ class AssetCompressHelper extends AppHelper {
 			$build = $hash;
 		}
 		$config->theme($this->theme);
-		return $this->_AssetCache->buildFileName($build);
+		return $this->_AssetCache->buildFileName($build, true, $appendExtension);
 	}
 
 /**

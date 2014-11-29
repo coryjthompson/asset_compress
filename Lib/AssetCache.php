@@ -31,10 +31,8 @@ class AssetCache {
 		if (!is_writable($path)) {
 			throw new RuntimeException('Cannot write cache file. Unable to write to ' . $path);
 		}
-		$filename = $this->buildFileName($build);
-		if($appendExtension) {
-			$filename .= '.' . $appendExtension;
-		}
+		$filename = $this->buildFileName($build, true, $appendExtension);
+
 		$isSuccess = file_put_contents($path . $filename, $content) !== false;
 		$this->finalize($build);
 		return $isSuccess;
@@ -246,7 +244,7 @@ class AssetCache {
  * @param string $target The build target name.
  * @return string The build filename to cache on disk.
  */
-	public function buildFileName($target, $timestamp = true) {
+	public function buildFileName($target, $timestamp = true, $appendExtension = false) {
 		$file = $target;
 		if ($this->_Config->isThemed($target)) {
 			$file = $this->_Config->theme() . '-' . $target;
@@ -255,6 +253,11 @@ class AssetCache {
 			$time = $this->getTimestamp($target);
 			$file = $this->_timestampFile($file, $time);
 		}
+
+		if($appendExtension !== false) {
+			$file .= '.' . $appendExtension;
+		}
+
 		return $file;
 	}
 
